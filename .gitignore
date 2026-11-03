@@ -1,0 +1,124 @@
+ --------------------------------------------------
+# Python - Virtual Environments
+# --------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+.python-version.local
+
+
+# --------------------------------------------------
+# Python - Cache & Compiled Files
+# --------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.egg-info/
+.eggs/
+build/
+dist/
+
+
+# --------------------------------------------------
+# Django
+# --------------------------------------------------
+*.log
+db.sqlite3
+db.sqlite3-journal
+local_settings.py
+staticfiles/
+media/
+*.mo
+
+# Keep Django migration files tracked!
+# Do NOT ignore */migrations/
+
+
+# --------------------------------------------------
+# Environment Variables & Secrets
+# --------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials.json
+
+
+# --------------------------------------------------
+# uv - Dependency Management
+# --------------------------------------------------
+# Keep pyproject.toml and uv.lock tracked!
+# Do NOT ignore uv.lock
+
+
+# --------------------------------------------------
+# React / Vite / TypeScript
+# --------------------------------------------------
+node_modules/
+frontend/dist/
+frontend/build/
+frontend/coverage/
+.vite/
+*.tsbuildinfo
+.eslintcache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# --------------------------------------------------
+# IDE - PyCharm / VS Code
+# --------------------------------------------------
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+
+# --------------------------------------------------
+# Docker / Local Data
+# --------------------------------------------------
+docker-data/
+postgres-data/
+redis-data/
+*.pid
+
+
+# --------------------------------------------------
+# Operating System Files
+# --------------------------------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+
+# --------------------------------------------------
+# Temporary / Backup Files
+# --------------------------------------------------
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+.cache/
