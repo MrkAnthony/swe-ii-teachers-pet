@@ -29,7 +29,9 @@ The application follows a **layered client-server architecture** with a modular 
 | Layer | Technology |
 |---|---|
 | Frontend | React, TypeScript, Vite, Tailwind CSS |
-| State Management | TanStack Query |
+| Server State & Data Fetching | TanStack Query, Axios |
+| Navigation | React Router |
+| UI Icons | Lucide React |
 | Backend | Python, Django, Django REST Framework |
 | Database | PostgreSQL 17 |
 | Caching | Redis |
@@ -99,6 +101,23 @@ teachers_pet/
 │   └── templates/
 │
 ├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/       # Reusable UI components
+│   │   ├── pages/            # Application pages
+│   │   ├── services/         # Axios and API functions
+│   │   ├── hooks/            # Custom React and Query hooks
+│   │   ├── types/            # TypeScript interfaces/types
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   └── index.css
+│   ├── .env.example
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── vite.config.ts
+│   └── tsconfig.json
+│
 ├── docs/
 ├── docker-compose.yml
 ├── .env.example
@@ -215,17 +234,139 @@ The backend will typically be available at:
 
 http://127.0.0.1:8000/
 
-### 6. Run the Frontend
+### 6. Initialize and Install Frontend Dependencies
 
-Once the React application is initialized:
+The frontend uses **React + Vite + TypeScript + Tailwind CSS**.
 
-```bash
+From the project root, open the existing frontend directory:
+
+```powershell
 cd frontend
+```
+
+**First-time setup only:** If the frontend directory exists but does not contain a Vite project (`package.json`), initialize it:
+
+```powershell
+npm create vite@latest . -- --template react-ts
 npm install
+```
+
+If `package.json` already exists, do not reinitialize Vite. Instead, run:
+
+```powershell
+npm install
+```
+
+Install the frontend libraries:
+
+```powershell
+npm install react-router-dom @tanstack/react-query axios
+npm install tailwindcss @tailwindcss/vite
+npm install lucide-react
+```
+
+Install frontend testing dependencies:
+
+```powershell
+npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom
+```
+
+Commit `frontend/package.json` and `frontend/package-lock.json` so all developers use consistent dependencies.
+
+Do not commit `node_modules/`.
+
+### 7. Configure Tailwind CSS
+
+Update `frontend/vite.config.ts`:
+
+```typescript
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+})
+```
+
+Update `frontend/src/index.css`:
+
+```css
+@import "tailwindcss";
+```
+
+This configuration uses **Tailwind CSS v4**.
+
+The older `tailwindcss init -p` command is not required.
+
+### 8. Configure Frontend API Integration
+
+Create a `frontend/.env` file:
+
+```dotenv
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
+
+Create a shared Axios client in `frontend/src/services/api.ts`:
+
+```typescript
+import axios from 'axios'
+
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000',
+})
+```
+
+All frontend API requests should use the shared Axios instance.
+
+This allows API configuration to remain centralized and makes backend integration easier to maintain.
+
+Django must be configured to allow requests from the frontend development origin.
+
+Coordinate endpoint paths, authentication, and API response formats with the backend team.
+
+**Security:** Never place private API keys, Django secrets, or credentials in frontend environment variables. Variables prefixed with `VITE_` are exposed to browser code.
+
+Do not commit `frontend/.env`. Maintain a sanitized `frontend/.env.example`.
+
+### 9. Run the Frontend
+
+From the `frontend/` directory:
+
+```powershell
 npm run dev
 ```
 
-Use the frontend URL displayed by Vite.
+The development server typically runs at:
+
+http://localhost:5173/
+
+Use the actual URL displayed by Vite if the port differs.
+
+Run the Django backend separately to support frontend API requests.
+
+To verify the production build:
+
+```powershell
+npm run build
+```
+
+### 10. Frontend Component Responsibilities
+
+| Directory | Responsibility |
+|---|---|
+| `src/components/` | Reusable navigation, location cards, search inputs, filters, crowd badges, review forms, loading and error states |
+| `src/pages/` | Home, location search/results, location details, and additional application views |
+| `src/services/` | Shared Axios client, API request functions, and backend integration |
+| `src/hooks/` | Reusable React hooks and TanStack Query hooks |
+| `src/types/` | TypeScript interfaces for locations, amenities, reviews, crowd reports, and API responses |
+| `src/assets/` | Images, logos, and other static application assets |
+
+React Router handles application navigation.
+
+TanStack Query handles server-side data fetching, caching, loading states, and error management.
+
+Crowd-report expiration is enforced by the backend using the system's **45-minute validity rule**.
 
 ## Development Guidelines
 
@@ -284,12 +425,17 @@ Avoid pushing unfinished features directly to the stable branch.
 
 ### Frontend Coding Standards
 
+- Use `PascalCase` for React component names and files.
 - Use reusable React components.
 - Use TypeScript for type safety.
 - Keep API requests separate from presentation components.
-- Follow consistent component naming conventions.
 - Use Tailwind CSS for styling.
 - Maintain responsive layouts.
+- Use React Router for navigation.
+- Use TanStack Query for server-state management.
+- Centralize API functions in `src/services/`.
+- Define API response types in `src/types/`.
+- Provide accessible controls and loading, empty, and error states.
 
 ## Testing
 
@@ -313,14 +459,35 @@ Tests should cover:
 
 ### Frontend
 
-Once configured, run:
+After installing Vitest, add this command to the existing `scripts` section of `frontend/package.json`:
 
-```bash
+```json
+"test": "vitest"
+```
+
+Run frontend tests:
+
+```powershell
 cd frontend
 npm run test
 ```
 
-The frontend test command must be defined in `package.json`.
+For a single test run without watch mode:
+
+```powershell
+npm run test -- --run
+```
+
+Frontend tests should cover:
+
+- Reusable UI components
+- Search and filtering interactions
+- Form validation
+- Loading and error states
+- Empty search results
+- API-backed application views
+
+Configure the `jsdom` environment and `@testing-library/jest-dom` before implementing component tests.
 
 ## Team Members
 
@@ -371,7 +538,12 @@ These documents define the system requirements, architecture, planned components
 - [ ] Configure environment variables
 - [ ] Implement Django models
 - [ ] Implement REST API endpoints
-- [ ] Initialize React frontend
+- [x] Create frontend directory
+- [ ] Initialize React + Vite + TypeScript application
+- [ ] Install and configure Tailwind CSS
+- [ ] Install React Router, TanStack Query, and Axios
+- [ ] Configure frontend API integration
+- [ ] Configure Vitest and React Testing Library
 - [ ] Implement frontend components
 - [ ] Integrate frontend and backend
 - [ ] Integrate maps and navigation
@@ -391,5 +563,3 @@ The system is designed to include:
 - Environment-based secret management
 
 Security requirements will be implemented and verified throughout development.
-
----
