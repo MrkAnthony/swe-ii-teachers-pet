@@ -441,10 +441,10 @@ Avoid pushing unfinished features directly to the stable branch.
 
 ### Backend
 
-Run backend tests using:
+Start the containers first, then from the `backend` folder run:
 
 ```bash
-uv run pytest backend
+uv run pytest
 ```
 
 Tests should cover:
@@ -494,9 +494,9 @@ Configure the `jsdom` environment and `@testing-library/jest-dom` before impleme
 | Team Member | Role |
 |---|---|
 | Mark-Anthony Delva | Backend Developer |
-| Jamar Morisseau | Frontend Developer |
-| Mahadi Rahman | QA / Requirements Engineer |
-| Bishal Ghosh | Full Stack / Integration Developer |
+| Jamar Morisseau | Backend Developer |
+| Mahadi Rahman | Frontend Developer |
+| Bishal Ghosh | Frontend Developer |
 
 ## Project Management
 

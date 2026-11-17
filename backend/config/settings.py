@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -154,6 +155,18 @@ CACHES = {
         "LOCATION": f"redis://{os.environ.get('REDIS_HOST', 'localhost')}:6379/0",
         "OPTIONS": {
             "PASSWORD": os.environ.get("REDIS_PASSWORD", "changeme"),
+            # if redis is down, keep running off postgres instead of crashing
+            "IGNORE_EXCEPTIONS": True,
         },
     }
+}
+
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
+CORS_ALLOW_CREDENTIALS = True
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+    ],
 }

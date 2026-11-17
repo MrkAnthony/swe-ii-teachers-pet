@@ -1,3 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import CrowdReport
+
+
+@admin.register(CrowdReport)
+class CrowdReportAdmin(admin.ModelAdmin):
+    list_display = ["location", "level", "reported_at", "user"]
+    list_filter = ["level"]
