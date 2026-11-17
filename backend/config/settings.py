@@ -152,7 +152,7 @@ MAILERS = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{os.environ.get('REDIS_HOST', 'localhost')}:{os.environ.get('REDIS_PORT', '6379')}/0",
+        "LOCATION": f"redis://{os.environ.get('REDIS_HOST', 'localhost')}:6379/0",
         "OPTIONS": {
             "PASSWORD": os.environ.get("REDIS_PASSWORD", "changeme"),
             # if redis is down, keep running off postgres instead of crashing
